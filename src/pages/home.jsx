@@ -90,4 +90,29 @@ function FeedPreview({ bottles }) {
     <section style={{ background: 'var(--parchment)', padding: '1.5rem 2rem' }}>
       <div className="section-eyebrow" style={{ marginBottom: '1rem' }}>bottles found drifting</div>
       {bottles.map(b => <BottleCard key={b.id} bottle={b} />)}
-      <div style={{ textAlign: 'center',
+      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <a href="/feed" style={{
+          fontFamily: "'EB Garamond', serif", fontSize: 13, fontStyle: 'italic',
+          color: 'var(--ink-s)', borderBottom: '1px solid rgba(61,43,31,0.2)',
+          paddingBottom: 2, textDecoration: 'none'
+        }}>
+          read more letters drifting in →
+        </a>
+      </div>
+    </section>
+  )
+}
+
+function Footer() {
+  return (
+    <footer style={{
+      background: 'var(--ink)', padding: '1rem 2rem',
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+    }}>
+      <span style={{ fontFamily: 'var(--fd)', fontSize: 16, color: 'var(--sky)' }}>🍊 orange</span>
+      <span style={{ fontFamily: "'EB Garamond', serif", fontSize: 11, fontStyle: 'italic', color: 'rgba(253,246,236,0.45)' }}>
+        anonymous · ephemeral · honest
+      </span>
+    </footer>
+  )
+}

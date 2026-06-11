@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { sealBottle } from '../lib/api'
 
 const DELIVERY_OPTIONS = [
   { id: 1, label: 'soon',    value: '7 days',  days: 7   },
@@ -13,18 +14,33 @@ export default function WriteLetter() {
   const [text, setText]         = useState('')
   const [delivery, setDelivery] = useState(1)
   const [sealed, setSealed]     = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
   const selectedOption = DELIVERY_OPTIONS.find(o => o.id === delivery)
 
-  function handleSeal() {
-    if (wordCount < 3) return
+async function handleSeal() {
+  if (wordCount < 3) return
+  setLoading(true)
+  try {
+    await sealBottle({
+      content: text,
+      type,
+      deliverInDays: selectedOption.days,
+    })
     setSealed(true)
-    setTimeout(() => {
-      setSealed(false)
-      setText('')
-    }, 5000)
+    setText('')
+    setTimeout(() => setSealed(false), 5000)
+  } catch (err) {
+    console.error('Failed to seal bottle:', err)
+    alert('Something went wrong. Try again.')
+  } finally {
+    setLoading(false)
   }
+}
+
+
+
 
   return (
     <section style={{ background: 'var(--cream)', padding: '2rem' }}>
@@ -91,15 +107,55 @@ export default function WriteLetter() {
       <AnimatePresence mode="wait">
         {!sealed ? (
           <motion.button
-            key="btn"
-            className="btn btn-primary"
-            style={{ width: '100%', fontSize: 17 }}
-            onClick={handleSeal}
-            whileTap={{ scale: 0.97 }}
-          >
-            🌊 &nbsp; seal & set adrift
-          </motion.button>
+  key="btn"
+  className="btn btn-primary"
+  style={{
+    width: '100%',
+    fontSize: 17,
+    opacity: loading ? 0.6 : 1,
+  }}
+  onClick={handleSeal}
+  disabled={loading}
+  whileTap={{ scale: 0.97 }}
+>
+  {loading
+    ? 'sealing...'
+    : '🌊  seal & set adrift'}
+</motion.button>
         ) : (
           <motion.div
             key="sealed"
-            initial={{
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{
+              background: 'var(--cream)',
+              border: '1px solid rgba(212,168,83,0.3)',
+              borderRadius: 14, padding: '2rem',
+              textAlign: 'center'
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              style={{ fontSize: 48, marginBottom: '0.5rem' }}
+            >
+              🍶
+            </motion.div>
+            <h3 style={{ fontFamily: 'var(--fd)', fontSize: 20, color: 'var(--ink)', margin: '0.5rem 0' }}>
+              Your bottle is drifting...
+            </h3>
+            <p style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', marginBottom: '1rem' }}>
+              It carries your words across time, anonymous and sealed.
+            </p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 13, fontStyle: 'italic', color: 'var(--gold)' }}>
+              ✦ &nbsp; it will arrive in {selectedOption.value} &nbsp; ✦
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  )
+}
+

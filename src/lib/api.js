@@ -1,0 +1,111 @@
+import { supabase } from './supabase'
+import { getSessionId } from './session'
+
+// ── Bottles ──────────────────────────────────────────
+
+/**
+ * Write and seal a new bottle.
+ * visible_at is set to now() + deliverInDays.
+ */
+export async function sealBottle({ content, type, deliverInDays }) {
+  const visibleAt = new Date(
+    Date.now() + deliverInDays * 24 * 60 * 60 * 1000
+  ).toISOString()
+
+  const { data, error } = await supabase
+    .from('bottles')
+    .insert({ content, type, deliver_in: deliverInDays, visible_at: visibleAt })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Fetch the feed — only bottles past their visible_at,
+ * newest arrivals first, with reaction counts joined.
+ */
+export async function fetchFeed({ page = 0, pageSize = 10 } = {}) {
+  const from = page * pageSize
+  const to   = from + pageSize - 1
+
+  const { data, error } = await supabase
+    .from('bottles')
+    .select(`
+      id, content, type, deliver_in, created_at, visible_at,
+      reactions ( emoji )
+    `)
+    .lte('visible_at', new Date().toISOString())
+    .order('visible_at', { ascending: false })
+    .range(from, to)
+
+  if (error) throw error
+
+  // Tally reaction counts per bottle
+  return data.map(bottle => {
+    const counts = {}
+    for (const { emoji } of bottle.reactions) {
+      counts[emoji] = (counts[emoji] || 0) + 1
+    }
+    return { ...bottle, reactionCounts: counts }
+  })
+}
+
+// ── Reactions ─────────────────────────────────────────
+
+/**
+ * Toggle a reaction — add if not present, remove if already reacted.
+ * Returns { added: true } or { removed: true }.
+ */
+export async function toggleReaction(bottleId, emoji) {
+  const sessionId = getSessionId()
+
+  // Check if already reacted
+  const { data: existing } = await supabase
+    .from('reactions')
+    .select('id')
+    .eq('bottle_id', bottleId)
+    .eq('session_id', sessionId)
+    .eq('emoji', emoji)
+    .maybeSingle()
+
+  if (existing) {
+    const { error } = await supabase
+      .from('reactions')
+      .delete()
+      .eq('id', existing.id)
+    if (error) throw error
+    return { removed: true }
+  } else {
+    const { error } = await supabase
+      .from('reactions')
+      .insert({ bottle_id: bottleId, emoji, session_id: sessionId })
+    if (error) throw error
+    return { added: true }
+  }
+}
+
+/**
+ * Get all emojis this session has reacted to for a list of bottle IDs.
+ * Returns a map: { [bottleId]: Set of emojis }
+ */
+export async function getMyReactions(bottleIds) {
+  if (!bottleIds.length) return {}
+  const sessionId = getSessionId()
+
+  const { data, error } = await supabase
+    .from('reactions')
+    .select('bottle_id, emoji')
+    .eq('session_id', sessionId)
+    .in('bottle_id', bottleIds)
+
+  if (error) throw error
+
+  const map = {}
+  for (const { bottle_id, emoji } of data) {
+    if (!map[bottle_id]) map[bottle_id] = new Set()
+    map[bottle_id].add(emoji)
+  }
+  return map
+}
