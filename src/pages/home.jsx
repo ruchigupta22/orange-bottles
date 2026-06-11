@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import WriteLetter from '../components/WriteLetter'
 import BottleCard from '../components/BottleCard'
+import MyBottles from '../components/MyBottles'
 
 const SAMPLE_BOTTLES = [
   {
@@ -28,6 +29,7 @@ export default function Home() {
       <Hero />
       <div className="horizon" />
       <WriteLetter />
+      <MyBottles /> 
       <div className="horizon" />
       <FeedPreview bottles={SAMPLE_BOTTLES} />
       <Footer />
@@ -45,13 +47,16 @@ function Hero() {
       overflow: 'hidden',
     }}>
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-        <span style={{ fontFamily: 'var(--fd)', fontSize: 22, color: 'var(--ink)' }}>🍊 orange</span>
-        <a href="/feed" style={{
-          fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic',
-          color: 'var(--ink-s)', borderBottom: '1px solid rgba(61,43,31,0.25)',
-          paddingBottom: 1, textDecoration: 'none'
-        }}>read letters →</a>
-      </nav>
+  <span style={{ fontFamily: 'var(--fd)', fontSize: 22, color: 'var(--ink)' }}>🍊 orange</span>
+  <div style={{ display: 'flex', gap: 16 }}>
+    <a href="/journey" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
+      my bottles
+    </a>
+    <a href="/feed" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
+      read letters →
+    </a>
+  </div>
+</nav>
 
       <motion.div
         animate={{ y: [0, -12, 0], rotate: [-4, 4, -4] }}

@@ -26,11 +26,11 @@ export async function sealBottle({ content, type, deliverInDays }) {
  * Fetch the feed — only bottles past their visible_at,
  * newest arrivals first, with reaction counts joined.
  */
-export async function fetchFeed({ page = 0, pageSize = 10 } = {}) {
+export async function fetchFeed({ page = 0, pageSize = 10, filter = null } = {}) {
   const from = page * pageSize
   const to   = from + pageSize - 1
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('bottles')
     .select(`
       id, content, type, deliver_in, created_at, visible_at,
@@ -40,9 +40,11 @@ export async function fetchFeed({ page = 0, pageSize = 10 } = {}) {
     .order('visible_at', { ascending: false })
     .range(from, to)
 
+  if (filter) query = query.eq('type', filter)  // ← add this line
+
+  const { data, error } = await query
   if (error) throw error
 
-  // Tally reaction counts per bottle
   return data.map(bottle => {
     const counts = {}
     for (const { emoji } of bottle.reactions) {
@@ -110,30 +112,3 @@ export async function getMyReactions(bottleIds) {
   return map
 }
 
-export async function fetchFeed({ page = 0, pageSize = 10, filter = null } = {}) {
-  const from = page * pageSize
-  const to   = from + pageSize - 1
-
-  let query = supabase
-    .from('bottles')
-    .select(`
-      id, content, type, deliver_in, created_at, visible_at,
-      reactions ( emoji )
-    `)
-    .lte('visible_at', new Date().toISOString())
-    .order('visible_at', { ascending: false })
-    .range(from, to)
-
-  if (filter) query = query.eq('type', filter)  // ← add this line
-
-  const { data, error } = await query
-  if (error) throw error
-
-  return data.map(bottle => {
-    const counts = {}
-    for (const { emoji } of bottle.reactions) {
-      counts[emoji] = (counts[emoji] || 0) + 1
-    }
-    return { ...bottle, reactionCounts: counts }
-  })
-}

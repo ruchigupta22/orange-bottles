@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { sealBottle } from '../lib/api'
+import { saveMyBottle } from '../lib/myBottles'
 
 const DELIVERY_OPTIONS = [
   { id: 1, label: 'soon',    value: '7 days',  days: 7   },
@@ -23,14 +24,15 @@ async function handleSeal() {
   if (wordCount < 3) return
   setLoading(true)
   try {
-    await sealBottle({
+    const data = await sealBottle({
       content: text,
       type,
       deliverInDays: selectedOption.days,
     })
+    saveMyBottle(data)   // ← save to localStorage
     setSealed(true)
     setText('')
-    setTimeout(() => setSealed(false), 5000)
+    setTimeout(() => setSealed(false), 6000)
   } catch (err) {
     console.error('Failed to seal bottle:', err)
     alert('Something went wrong. Try again.')
