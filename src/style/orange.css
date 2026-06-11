@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap');
+
+:root {
+  /* Core palette */
+  --o-sky:       #F5C47A;   /* hero backgrounds */
+  --o-dusk:      #E8956A;   /* primary CTA */
+  --o-ember:     #C1604A;   /* accents, active borders */
+  --o-cream:     #FDF6EC;   /* card surfaces */
+  --o-parchment: #F0E8D4;   /* inputs, letter bg */
+  --o-ink:       #3D2B1F;   /* body text */
+  --o-ink-soft:  #6B4C3B;   /* muted text */
+  --o-sage:      #8BA888;   /* past self */
+  --o-water:     #89B4C8;   /* future self */
+  --o-gold:      #D4A853;   /* wax seal, special */
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Crimson Pro', Georgia, serif;
+  --font-caption: 'EB Garamond', Georgia, serif;
+
+  /* Spacing */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 100px;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--o-parchment);
+  color: var(--o-ink);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Horizon rule (signature element) ── */
+.horizon {
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--o-sky), var(--o-dusk), var(--o-ember));
+  border-radius: 2px;
+  margin: 2rem 0;
+}
+
+/* ── Typography ── */
+.font-display  { font-family: var(--font-display); }
+.font-body     { font-family: var(--font-body); }
+.font-caption  { font-family: var(--font-caption); font-style: italic; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 12px;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+}
+.badge-future { background: var(--o-water);     color: var(--o-ink); }
+.badge-past   { background: var(--o-sage);      color: var(--o-ink); }
+.badge-sealed { background: var(--o-parchment); color: var(--o-ink-soft);
+                border: 1px solid rgba(61,43,31,0.15); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 10px 26px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--o-dusk);
+  color: var(--o-cream);
+  font-style: italic;
+}
+.btn-primary:hover { opacity: 0.88; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--o-ink);
+  border: 1px solid rgba(61,43,31,0.2);
+}
+.btn-ghost:hover { background: rgba(61,43,31,0.04); }
+
+/* ── Cards ── */
+.card {
+  background: var(--o-cream);
+  border: 1px solid rgba(212,168,83,0.25);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+/* subtle amber glow on top-right */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(245,196,122,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Reactions ── */
+.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--o-parchment);
+  border: 1px solid rgba(61,43,31,0.1);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  color: var(--o-ink-soft);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 0.15s ease;
+}
+.reaction:hover        { background: rgba(232,149,106,0.12); }
+.reaction.reacted      { background: rgba(232,149,106,0.2); color: var(--o-ember); }
+
+/* ── Textarea (letter writing) ── */
+.letter-input {
+  width: 100%;
+  background: var(--o-parchment);
+  border: 1px solid rgba(61,43,31,0.15);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-style: italic;
+  color: var(--o-ink);
+  line-height: 1.8;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.letter-input::placeholder { color: var(--o-ink-soft); opacity: 0.6; }
+.letter-input:focus { border-color: rgba(232,149,106,0.5); }
+
+/* ── Animations ── */
+@keyframes floatBottle {
+  0%, 100% { transform: translateY(0px) rotate(-3deg); }
+  50%       { transform: translateY(-10px) rotate(3deg); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ripple {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(3); opacity: 0; }
+}
+@keyframes sealPop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.float    { animation: floatBottle 3s ease-in-out infinite; }
+.fade-up  { animation: fadeUp 0.5s ease forwards; }
+.seal-pop { animation: sealPop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
