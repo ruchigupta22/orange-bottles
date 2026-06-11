@@ -109,3 +109,31 @@ export async function getMyReactions(bottleIds) {
   }
   return map
 }
+
+export async function fetchFeed({ page = 0, pageSize = 10, filter = null } = {}) {
+  const from = page * pageSize
+  const to   = from + pageSize - 1
+
+  let query = supabase
+    .from('bottles')
+    .select(`
+      id, content, type, deliver_in, created_at, visible_at,
+      reactions ( emoji )
+    `)
+    .lte('visible_at', new Date().toISOString())
+    .order('visible_at', { ascending: false })
+    .range(from, to)
+
+  if (filter) query = query.eq('type', filter)  // ← add this line
+
+  const { data, error } = await query
+  if (error) throw error
+
+  return data.map(bottle => {
+    const counts = {}
+    for (const { emoji } of bottle.reactions) {
+      counts[emoji] = (counts[emoji] || 0) + 1
+    }
+    return { ...bottle, reactionCounts: counts }
+  })
+}
