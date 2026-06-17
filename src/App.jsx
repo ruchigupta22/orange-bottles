@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
-import Feed from './pages/Feed'
-import MyJourney  from './pages/MyJourney'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
+import Home      from './pages/Home'       // ← capital H
+import Feed      from './pages/Feed'       // ← capital F
+import MyJourney from './pages/MyJourney'  // ← capital M, J
 import PageWrapper from './components/PageWrapper'
 
 function AnimatedRoutes() {
