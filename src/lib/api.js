@@ -112,3 +112,51 @@ export async function getMyReactions(bottleIds) {
   return map
 }
 
+export async function sealBottleToUser({ content, type, deliverInDays, recipientUsername }) {
+  const visibleAt = new Date(
+    Date.now() + deliverInDays * 24 * 60 * 60 * 1000
+  ).toISOString()
+
+  const { data, error } = await supabase
+    .from('bottles')
+    .insert({
+      content,
+      type,
+      deliver_in:         deliverInDays,
+      visible_at:         visibleAt,
+      recipient_username: recipientUsername,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+// Fetch bottles received by logged-in user
+export async function fetchInbox() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile) return []
+
+  const { data, error } = await supabase
+    .from('bottles')
+    .select(`id, content, type, deliver_in, created_at, visible_at, reactions(emoji)`)
+    .eq('recipient_username', profile.username)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+
+  return data.map(b => {
+    const counts = {}
+    b.reactions.forEach(({ emoji }) => { counts[emoji] = (counts[emoji] || 0) + 1 })
+    return { ...b, reactionCounts: counts }
+  })
+}

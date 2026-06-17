@@ -7,6 +7,8 @@ import MyJourney     from './pages/MyJourney'
 import Login         from './pages/Login'
 import SetupUsername from './pages/SetupUsername'
 import PageWrapper   from './components/PageWrapper'
+import SendBottle  from './pages/SendBottle'
+import UserProfile from './pages/UserProfile'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -28,6 +30,9 @@ function AnimatedRoutes() {
         <Route path="/feed"    element={<PageWrapper><Feed /></PageWrapper>} />
         <Route path="/journey" element={user ? <PageWrapper><MyJourney /></PageWrapper> : <Navigate to="/login" />} />
         <Route path="/login"   element={user ? <Navigate to="/" /> : <PageWrapper><Login /></PageWrapper>} />
+        <Route path="/send"       element={<PageWrapper><SendBottle /></PageWrapper>} />
+        <Route path="/u/:username" element={<PageWrapper><UserProfile /></PageWrapper>} />
+
       </Routes>
     </AnimatePresence>
   )
