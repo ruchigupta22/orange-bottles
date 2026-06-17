@@ -169,3 +169,34 @@ body {
 .float    { animation: floatBottle 3s ease-in-out infinite; }
 .fade-up  { animation: fadeUp 0.5s ease forwards; }
 .seal-pop { animation: sealPop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .hero-title   { font-size: 24px !important; }
+  .write-title  { font-size: 19px !important; }
+  .delivery-row { flex-direction: column; }
+  .delivery-chip { min-width: unset; }
+
+  .card { padding: 1rem 1.1rem; }
+
+  .feed-card-text { font-size: 14px !important; }
+
+  .btn { font-size: 15px; padding: 11px 20px; }
+
+  .nav { flex-wrap: wrap; gap: 8px; }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar        { width: 6px; }
+::-webkit-scrollbar-track  { background: var(--parchment); }
+::-webkit-scrollbar-thumb  { background: var(--dusk); border-radius: 3px; }
+
+/* ── Selection highlight ── */
+::selection { background: rgba(232,149,106,0.3); color: var(--ink); }
+
+/* ── Focus ring ── */
+:focus-visible {
+  outline: 2px solid var(--dusk);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
