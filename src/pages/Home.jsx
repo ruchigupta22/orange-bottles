@@ -9,21 +9,32 @@ const SAMPLE_BOTTLES = [
   {
     id: 1,
     type: 'future',
-    text: "I hope you stopped apologising for taking up space. You always deserved to be in the room.",
+    text: ".....",
     daysAgo: 3,
     sealedDays: 61,
-    reactions: { '🌊': 23, '🍊': 8, '🥺': 41, '🕊': 5 }
+    reactions: {
+      '🌊': 23, // I felt this
+    
+      '🥹': 41, // You touched my heart
+      '🕊️': 5, // Sending you peace
+      '✨': 12  // Holding onto this
+    }
   },
   {
     id: 2,
     type: 'past',
-    text: "Remember when you used to stay up until 3am just because the night felt more honest? I miss that version of you.",
+    text: ".....",
     daysAgo: 1,
     sealedDays: 14,
-    reactions: { '🌊': 15, '🍊': 29, '🥺': 7, '✉️': 3 }
+    reactions: {
+      '🌊': 15,
+      
+      '🥹': 7,
+      '🕊️': 4,
+      '✨': 3
+    }
   },
 ]
-
 export default function Home() {
   return (
     <div style={{ maxWidth: 680, margin: '0 auto' }}>
@@ -39,6 +50,7 @@ export default function Home() {
 }
 
 function Hero() {
+  const { user, profile, signOut } = useAuth()
   return (
     <section style={{
       background: 'linear-gradient(180deg, #FAE5BC 0%, #F5C47A 45%, #E8956A 78%, #C1604A 100%)',
@@ -47,7 +59,7 @@ function Hero() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      const { user, profile, signOut } = useAuth()
+      
     <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
   <span style={{ fontFamily: 'var(--fd)', fontSize: 22, color: 'var(--ink)' }}>🍊 orange</span>
   <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>

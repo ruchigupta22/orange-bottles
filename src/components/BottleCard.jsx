@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { toggleReaction } from '../lib/api'
 
-const REACTION_EMOJIS = ['🌊', '🍊', '🥺', '🕊', '✉️']
+const REACTION_EMOJIS = ['🌊', '🥺', '🕊️', '✨']
+const REACTION_LABELS = {
+  "🌊": "I felt this",
+  "🥹": "You touched my heart",
+  "🕊️": "Sending you peace",
+  "✨": "Holding onto this",
+}
 
 export default function BottleCard({ bottle, myReactions = new Set(), onReact }) {
   const [toggling, setToggling] = useState(null)
@@ -10,9 +16,31 @@ export default function BottleCard({ bottle, myReactions = new Set(), onReact })
   const daysSealed = Math.floor(
     (new Date(bottle.visible_at) - new Date(bottle.created_at)) / (1000 * 60 * 60 * 24)
   )
-  const arrivedAgo = Math.floor(
-    (Date.now() - new Date(bottle.visible_at)) / (1000 * 60 * 60 * 24)
-  )
+  
+  const diff = Date.now() - new Date(bottle.visible_at)
+
+let arrivedAgo
+
+if (diff < 60000) {
+  arrivedAgo = "just washed ashore"
+} else if (diff < 3600000) {
+  arrivedAgo = `${Math.floor(diff / 60000)}m ago`
+} else if (diff < 86400000) {
+  arrivedAgo = `${Math.floor(diff / 3600000)}h ago`
+} else {
+  arrivedAgo = `${Math.floor(diff / 86400000)}d ago`
+}
+
+
+
+if (diff < 60000)
+  arrivedAgo = "just arrived"
+else if (diff < 3600000)
+  arrivedAgo = `${Math.floor(diff/60000)}m ago`
+else if (diff < 86400000)
+  arrivedAgo = `${Math.floor(diff/3600000)}h ago`
+else
+  arrivedAgo = `${Math.floor(diff/86400000)}d ago`
 
   async function handleReact(emoji) {
     if (toggling) return
@@ -52,7 +80,7 @@ export default function BottleCard({ bottle, myReactions = new Set(), onReact })
         </span>
         {arrivedAgo === 0
           ? <span>arrived today</span>
-          : <span>found {arrivedAgo}d ago</span>
+          : <span>found {arrivedAgo}</span>
         }
         <span>·</span>
         <span>sealed {daysSealed} days</span>
@@ -78,6 +106,7 @@ export default function BottleCard({ bottle, myReactions = new Set(), onReact })
               key={emoji}
               className={`reaction ${reacted ? 'reacted' : ''}`}
               onClick={() => handleReact(emoji)}
+              title={REACTION_LABELS[emoji]}
               disabled={busy}
               whileTap={{ scale: 0.88 }}
               animate={busy ? { scale: [1, 1.2, 1] } : {}}

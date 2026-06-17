@@ -9,12 +9,17 @@ import { getSessionId } from './session'
  */
 export async function sealBottle({ content, type, deliverInDays }) {
   const visibleAt = new Date(
-    Date.now() + deliverInDays * 24 * 60 * 60 * 1000
+    Date.now() + 30 * 1000
   ).toISOString()
 
   const { data, error } = await supabase
     .from('bottles')
-    .insert({ content, type, deliver_in: deliverInDays, visible_at: visibleAt })
+    .insert({
+      content,
+      type,
+      deliver_in: deliverInDays,
+      visible_at: visibleAt
+    })
     .select()
     .single()
 
@@ -114,8 +119,8 @@ export async function getMyReactions(bottleIds) {
 
 export async function sealBottleToUser({ content, type, deliverInDays, recipientUsername }) {
   const visibleAt = new Date(
-    Date.now() + deliverInDays * 24 * 60 * 60 * 1000
-  ).toISOString()
+  Date.now() + 30 * 1000
+).toISOString()
 
   const { data, error } = await supabase
     .from('bottles')
@@ -159,4 +164,22 @@ export async function fetchInbox() {
     b.reactions.forEach(({ emoji }) => { counts[emoji] = (counts[emoji] || 0) + 1 })
     return { ...b, reactionCounts: counts }
   })
+}
+
+export async function searchUsers(query = "") {
+  let request = supabase
+    .from("profiles")
+    .select("username")
+    .order("username")
+    .limit(10)
+
+  if (query.trim()) {
+    request = request.ilike("username", `${query}%`)
+  }
+
+  const { data, error } = await request
+
+  if (error) throw error
+
+  return data
 }

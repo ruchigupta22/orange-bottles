@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { sealBottleToUser } from '../lib/api'
+import { sealBottleToUser, searchUsers } from '../lib/api'
 import { saveMyBottle } from '../lib/myBottles'
+
 
 const DELIVERY_OPTIONS = [
   { id: 1, label: 'soon',     value: '7 days',   days: 7   },
@@ -17,7 +18,9 @@ export default function SendBottle() {
   const navigate = useNavigate()
 
   // Pre-fill recipient if coming from /u/:username
+  const [mode, setMode] = useState("user")
   const [recipient, setRecipient]   = useState(searchParams.get('to') || '')
+  const [users, setUsers] = useState([])
   const [recipientOk, setRecipientOk] = useState(!!searchParams.get('to'))
   const [checking, setChecking]     = useState(false)
   const [text, setText]             = useState('')
@@ -26,9 +29,19 @@ export default function SendBottle() {
   const [loading, setLoading]       = useState(false)
   const [sealed, setSealed]         = useState(false)
   const [error, setError]           = useState('')
+  const [suggestions, setSuggestions] = useState([])
 
   const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
   const selectedOption = DELIVERY_OPTIONS.find(o => o.id === delivery)
+  useEffect(() => {
+  loadUsers()
+}, [])
+
+async function loadUsers() {
+  const data = await searchUsers("")
+  setUsers(data || [])
+}
+  
 
   // Check if username exists
   async function checkRecipient(val) {
@@ -43,13 +56,20 @@ export default function SendBottle() {
     setChecking(false)
   }
 
-  function handleRecipientChange(e) {
-    const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')
-    setRecipient(val)
-    setRecipientOk(false)
-    clearTimeout(window._rcTimer)
-    window._rcTimer = setTimeout(() => checkRecipient(val), 500)
-  }
+    async function handleRecipientChange(e) {
+  const val = e.target.value
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "")
+
+  setRecipient(val)
+
+  const users = await searchUsers(val)
+  setSuggestions(users)
+
+  clearTimeout(window._rcTimer)
+  window._rcTimer =
+    setTimeout(() => checkRecipient(val), 500)
+}
 
   async function handleSeal() {
     if (wordCount < 3 || !recipientOk) return
@@ -97,12 +117,43 @@ export default function SendBottle() {
       <div className="horizon" />
 
       <div style={{ padding: '2rem 1.5rem' }}>
+        {/* Send mode */}
+<div
+  style={{
+    display: "flex",
+    gap: 10,
+    marginBottom: "1.5rem",
+  }}
+>
+  <button
+    className={`type-btn ${mode === "user" ? "active-future" : ""}`}
+    onClick={() => setMode("user")}
+  >
+    👤 send to a traveler
+  </button>
 
-        {/* Recipient search */}
-        <div style={{ background: 'var(--cream)', border: '1px solid rgba(212,168,83,0.25)', borderRadius: 16, padding: '1.5rem', marginBottom: 16 }}>
+  <button
+    className={`type-btn ${mode === "ocean" ? "active-future" : ""}`}
+    onClick={() => setMode("ocean")}
+  >
+    🌊 drift into the ocean
+  </button>
+</div>
+
+
+
+        {mode === "user" && (
+  <div style={{
+    background: 'var(--cream)',
+    border: '1px solid rgba(212,168,83,0.25)',
+    borderRadius: 16,
+    padding: '1.5rem',
+    marginBottom: 16
+  }}>
           <div style={{ fontFamily: 'var(--fb)', fontSize: 11, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--ink-s)', marginBottom: 8 }}>
             send to
           </div>
+        
           <div style={{ position: 'relative', marginBottom: 8 }}>
             <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontFamily: 'var(--fb)', fontSize: 15, fontStyle: 'italic', color: 'var(--ink-s)', opacity: 0.6, pointerEvents: 'none' }}>@</span>
             <input
@@ -113,6 +164,70 @@ export default function SendBottle() {
               onChange={handleRecipientChange}
               style={{ paddingLeft: 36, fontStyle: 'normal', fontSize: 15 }}
             />
+            {users.length > 0 && (
+  <div
+    style={{
+      marginTop: 12,
+      background: "var(--parchment)",
+      borderRadius: 12,
+      padding: 8,
+      maxHeight: 180,
+      overflowY: "auto",
+    }}
+  >
+    {users
+      .filter(u => u.username !== recipient)
+      .map(user => (
+        <div
+          key={user.username}
+          onClick={() => {
+            setRecipient(user.username)
+            setRecipientOk(true)
+          }}
+          style={{
+            padding: 10,
+            cursor: "pointer",
+            borderBottom: "1px solid rgba(0,0,0,0.05)",
+            fontFamily: "var(--fb)",
+            fontStyle: "italic",
+          }}
+        >
+          @{user.username}
+        </div>
+      ))}
+  </div>
+)}
+
+            {suggestions.length > 0 && (
+  <div
+    style={{
+      marginTop: 12,
+      background: "var(--parchment)",
+      borderRadius: 12,
+      padding: 8,
+    }}
+  >
+    {suggestions.map(user => (
+      <div
+        key={user.username}
+        onClick={() => {
+          setRecipient(user.username)
+          setRecipientOk(true)
+          setSuggestions([])
+        }}
+        style={{
+          padding: 10,
+          cursor: "pointer",
+          fontFamily: "var(--fb)",
+          fontStyle: "italic",
+        }}
+      >
+        @{user.username}
+      </div>
+    ))}
+  </div>
+)}
+
           </div>
           <p style={{
             fontFamily: "'EB Garamond', serif", fontSize: 12, fontStyle: 'italic', paddingLeft: 4,
@@ -124,6 +239,7 @@ export default function SendBottle() {
              '✗  username not found'}
           </p>
         </div>
+        )}
 
         {/* Letter area — only show once recipient confirmed */}
         <AnimatePresence>
@@ -141,6 +257,7 @@ export default function SendBottle() {
                   </button>
                 ))}
               </div>
+            
 
               {/* Paper */}
               <div className="letter-wrap" style={{ marginBottom: '0.5rem' }}>
@@ -170,6 +287,7 @@ export default function SendBottle() {
                   </div>
                 ))}
               </div>
+              
 
               {error && <p style={{ fontFamily: 'var(--fb)', fontSize: 13, color: 'var(--ember)', fontStyle: 'italic', marginBottom: '1rem' }}>{error}</p>}
 
