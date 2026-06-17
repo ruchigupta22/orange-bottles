@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import WriteLetter from '../components/WriteLetter'
 import BottleCard from '../components/BottleCard'
 import MyBottles from '../components/MyBottles'
+import { useAuth } from '../hooks/useAuth'
 
 const SAMPLE_BOTTLES = [
   {
@@ -46,12 +47,24 @@ function Hero() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+      const { user, profile, signOut } = useAuth()
+    <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
   <span style={{ fontFamily: 'var(--fd)', fontSize: 22, color: 'var(--ink)' }}>🍊 orange</span>
-  <div style={{ display: 'flex', gap: 16 }}>
-    <a href="/journey" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
-      my bottles
-    </a>
+  <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+    {user ? (
+      <>
+        <a href="/journey" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
+          @{profile?.username}
+        </a>
+        <button onClick={signOut} style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', background: 'none', border: 'none', cursor: 'pointer', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
+          sign out
+        </button>
+      </>
+    ) : (
+      <a href="/login" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
+        sign in →
+      </a>
+    )}
     <a href="/feed" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
       read letters →
     </a>
