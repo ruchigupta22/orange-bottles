@@ -9,6 +9,7 @@ import SetupUsername from './pages/SetupUsername'
 import PageWrapper   from './components/PageWrapper'
 import SendBottle  from './pages/SendBottle'
 import UserProfile from './pages/UserProfile'
+import Inbox from './pages/Inbox'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -32,6 +33,7 @@ function AnimatedRoutes() {
         <Route path="/login"   element={user ? <Navigate to="/" /> : <PageWrapper><Login /></PageWrapper>} />
         <Route path="/send"       element={<PageWrapper><SendBottle /></PageWrapper>} />
         <Route path="/u/:username" element={<PageWrapper><UserProfile /></PageWrapper>} />
+        <Route path="/inbox" element={user ? <PageWrapper><Inbox /></PageWrapper> : <Navigate to="/login" />} />
 
       </Routes>
     </AnimatePresence>

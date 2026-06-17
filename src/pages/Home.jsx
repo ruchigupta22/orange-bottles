@@ -64,7 +64,11 @@ function Hero() {
       <a href="/login" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
         sign in →
       </a>
+      
     )}
+    <a href="/inbox" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
+  📬 inbox
+</a>
     <a href="/feed" style={{ fontFamily: 'var(--fb)', fontSize: 14, fontStyle: 'italic', color: 'var(--ink-s)', textDecoration: 'none', borderBottom: '1px solid rgba(61,43,31,0.25)', paddingBottom: 1 }}>
       read letters →
     </a>
