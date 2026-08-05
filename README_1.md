@@ -109,7 +109,7 @@ Add screenshots to a /screenshots folder in the repo root, then reference them h
 
 | Home — write a letter | Your bottles / feed | Send to a traveler |
 |---|---|---|
-| ![Home](./screenshots/home.png) | ![Feed](./screenshots/feed.png) | ![Send](./screenshots/send.png) |
+| ![Home](./screenshots/Home.png) | ![Feed](./screenshots/Feed.png) | ![Send](./screenshots/Send.png) |
 
 ---
 
