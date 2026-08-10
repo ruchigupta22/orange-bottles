@@ -89,7 +89,28 @@ React frontend (Vite, on Vercel)
 
 ## Database & security
 
-- Bottles are stored in a single Postgres table with a `visible_at` timestamp.
+The app runs on a single `bottles` table in Postgres.
+
+| Column | Type | Nullable | Purpose |
+|---|---|---|---|
+| `id` | uuid | No (primary key) | Unique identifier for each bottle |
+| `content` | text | No | The letter's text |
+| `type` | text | No | Who it's addressed to: `past` or `future` |
+| `deliver_in` | int4 | No | Days until delivery, chosen at write time (7, 30, 180, 365) |
+| `visible_at` | timestamptz | No | Computed delivery timestamp; the bottle is hidden until this passes |
+| `created_at` | timestamptz | Yes | When the bottle was written |
+| `is_sealed` | bool | Yes | Whether the bottle has been sealed and sent |
+| `recipient_id` | uuid (foreign key) | Yes | Set only for targeted delivery; references the recipient's profile |
+| `recipient_username` | text (foreign key) | Yes | Recipient's username, used to look up targeted deliveries |
+| `sender_session` | text | Yes | Anonymous session ID, used for anonymous "drift into the ocean" bottles |
+
+`recipient_id` and `recipient_username` stay null for anonymous bottles and get set
+only when a letter is sent to a specific person. The primary key (`id`) is indexed
+by default; I haven't added any additional indexes beyond that yet, the table is
+small enough right now that it hasn't been necessary.
+
+Security:
+
 - I designed and tested Row Level Security policies directly against the database
   to enforce that a bottle is only readable once `visible_at <= now()`, independent
   of the frontend.
@@ -174,6 +195,4 @@ The visual identity is built around a few ideas from the anime:
 
 ---
 
-## License
 
-MIT, see [LICENSE](./LICENSE)
