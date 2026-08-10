@@ -186,6 +186,24 @@ The visual identity is built around a few ideas from the anime:
 
 ---
 
+## Performance
+
+I ran a Lighthouse audit against the live feed page (mobile, simulated Slow 4G):
+
+| Category | Score |
+|---|---|
+| Accessibility | 88 |
+| SEO | 90 |
+| Best Practices | 73 |
+| Performance | 34 |
+
+Accessibility and SEO came out solid. Performance is the honest weak point right
+now, mainly driven by First Contentful Paint (5.6s) and Total Blocking Time
+(990ms) under throttled conditions. The main causes Lighthouse flagged: about
+313 KiB of unused JavaScript and 84 KiB that could be minified, both likely from
+shipping the full Framer Motion and Supabase client bundles without code-splitting.
+Next step here would be lazy-loading routes and trimming unused imports.
+
 ## What's next
 
 - Email nudge when your bottle arrives (Supabase Edge Function + Resend)
@@ -195,4 +213,6 @@ The visual identity is built around a few ideas from the anime:
 
 ---
 
+## License
 
+MIT, see [LICENSE](./LICENSE)
