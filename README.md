@@ -158,6 +158,19 @@ src/
 
 ---
 
+## Testing
+
+I have a unit test suite (Vitest) covering the core logic in `src/lib/api.js`:
+sealing a bottle and computing its delivery time correctly, aggregating reactions
+per bottle, and the add/remove branches of toggling a reaction. Supabase calls are
+mocked so the tests run without hitting the real database.
+
+```bash
+npm test
+```
+
+10 tests, all passing.
+
 ## Running it locally
 
 ```bash
