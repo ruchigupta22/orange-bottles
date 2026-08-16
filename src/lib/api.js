@@ -9,7 +9,7 @@ import { getSessionId } from './session'
  */
 export async function sealBottle({ content, type, deliverInDays }) {
   const visibleAt = new Date(
-    Date.now() + 30 * 1000
+    Date.now() + deliverInDays * 24 * 60 * 60 * 1000
   ).toISOString()
 
   const { data, error } = await supabase
@@ -119,7 +119,7 @@ export async function getMyReactions(bottleIds) {
 
 export async function sealBottleToUser({ content, type, deliverInDays, recipientUsername }) {
   const visibleAt = new Date(
-  Date.now() + 30 * 1000
+  Date.now() + deliverInDays * 24 * 60 * 60 * 1000
 ).toISOString()
 
   const { data, error } = await supabase
